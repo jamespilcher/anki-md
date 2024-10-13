@@ -1,0 +1,3 @@
+# Three constructs of an algorithm (in plain english)
+Sequence - order do this, then do that<br>Decision - if this, do that<br>Repetition - while this is happening, do that.
+
