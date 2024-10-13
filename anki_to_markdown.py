@@ -1,20 +1,34 @@
 import os
 import re
 import shutil
+import sys
 
-ANKI_MEDIA_FOLDER = r"C:\Users\pilch\AppData\Roaming\Anki2\User 1\collection.media"
-ANKI_EXPORTED_DECK_TXT = r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt"
-DECKS_FOLDER = r"C:\Users\pilch\anki_to_markdown\decks"
-MEDIA_FOLDER = r"C:\Users\pilch\anki_to_markdown\media"
+# 1. Open anki
+# 2. 'Cog' the deck you want to export... click export
+# 3. Export as 'Notes in Plain Text' with ALL options:
+#     - Include HTML and media references
+#     - Include tags
+#     - Include deck name !!!! IMPORTANT, non default !!!!
+# 4. Save the file to a location
+# 5. Update constants:
+ANKI_MEDIA_FOLDER = r"C:\Users\pilch\AppData\Roaming\Anki2\User 1\collection.media" # can find via %APPDATA%\Anki2\User 1\collection.media
+ANKI_EXPORTED_DECK_TXT = r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt" # path to the exported deck txt file
 
+# 6. Run the script from same folder as this file!
+cwd = os.getcwd()
+DECKS_FOLDER = os.path.join(cwd, "decks")
+MEDIA_FOLDER = os.path.join(cwd, "media")
 
 def copy_media_files():
+    print("Copying media files...")
     for file in os.listdir(ANKI_MEDIA_FOLDER):
         if file.endswith(".png") or file.endswith(".jpg"):
             shutil.copy2(os.path.join(ANKI_MEDIA_FOLDER, file), MEDIA_FOLDER)
+    print("Media files copied.")
     return
 
 def clear_decks_folder():
+    print("Clearing decks folder...")
     for file in os.listdir(DECKS_FOLDER):
         file_path = os.path.join(DECKS_FOLDER, file)
         try:
@@ -24,6 +38,7 @@ def clear_decks_folder():
                 shutil.rmtree(file_path)
         except Exception as e:
             print(e)
+    print("Decks folder cleared.")
     return
 
 def sanitize_and_fix_paths(text: str, num_of_dot_dots: int) -> str:
@@ -46,7 +61,6 @@ def create_card_md(deck_folder: str, card_title: str, question: str, answer: str
 def process_card(line: str):
     try:
         line_parts = line.split("\t")
-        print(line_parts)
         if len(line_parts) < 3:
             raise ValueError("not enough values to unpack")
         deck, question, answer = line_parts[0], line_parts[1], line_parts[2]
@@ -66,6 +80,7 @@ def process_card(line: str):
     create_card_md(deck_folder, card_title, question, answer)
 
 def convert_anki_deck_to_md(deck_folder: str):
+    print("Converting Anki deck to markdown...")
     with open(deck_folder, 'r') as file:
         lines = file.readlines()
         for line in lines:
@@ -73,6 +88,7 @@ def convert_anki_deck_to_md(deck_folder: str):
                 # metadata line, skip
                 continue
             process_card(line)
+    print("Anki deck successfully converted to markdown")
 
 clear_decks_folder()
 copy_media_files()
