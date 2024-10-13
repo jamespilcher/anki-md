@@ -17,7 +17,7 @@ def copy_media_files():
             shutil.copy2(os.path.join(anki_media_folder, file), out_media_folder)
     return
 
-def wipe_anki_out():
+def clear_out_folder():
     # wipe the output folder
     for file in os.listdir(out_folder):
         file_path = os.path.join(out_folder, file)
@@ -30,8 +30,44 @@ def wipe_anki_out():
             print(e)
     return
 
-wipe_anki_out()
+clear_out_folder()
 copy_media_files()
+
+def process_card(line: str):
+        try:
+            line_parts = line.split("\t")
+            print(line_parts)
+            if len(line_parts) < 3:
+                raise ValueError("not enough values to unpack")
+            deck, question, answer = line_parts[0], line_parts[1], line_parts[2]
+        except ValueError as e:
+            print(f"Error splitting line: {line.strip()} - {e}")
+            return
+        
+        deck_parts = deck.split("::")
+        num_of_dot_dots = len(deck_parts) + 1 # for relative pathing
+        deck_folder = os.path.join(out_folder, *deck_parts)
+        os.makedirs(deck_folder, exist_ok=True)
+
+        if question.startswith('"') and question.endswith('"'):
+            question = question[1:-1]
+        if answer.startswith('"') and answer.endswith('"'):
+            answer = answer[1:-1]
+
+        card_title = re.sub(r'[<>:"/\\|?*]', '_', question)
+        with open(os.path.join(deck_folder, f"{card_title}.md"), 'a') as card_file:
+            dot_dots = "../" * num_of_dot_dots
+            question = question.replace('<img src=""', f'<img src="{dot_dots}media/').replace('.jpg""', '.jpg"')
+            answer = answer.replace('<img src=""', f'<img src="{dot_dots}media/').replace('.jpg""', '.jpg"')
+            
+            card_file.write(f"# {question}\n")
+
+            # wrap the answer in a details tag, so it's hidden until clicked
+            card_file.write("<details>\n")
+            card_file.write(f"<summary><b>Reveal answer</b></summary>\n")
+            card_file.write(f"{answer}\n")
+            card_file.write("</details>\n")
+
 
 
 
@@ -43,44 +79,6 @@ with open(anki_text, 'r') as file:
         if line.startswith("#"):
             continue
         # Separate the line into the question and answer using tabs (deck, question, answer)
-        try:
-            line_parts = line.split("\t")
-            if len(line_parts) < 3:
-                raise ValueError("not enough values to unpack")
-            deck, question, answer = line_parts[0], line_parts[1], "".join(line_parts[2:])
-        except ValueError as e:
-            print(f"Error splitting line: {line.strip()} - {e}")
-            continue
-
-        # mkdir for the deck
-        # make list of deck names split from ::
-        deck_parts = deck.split("::")
-
-        deck_folder = os.path.join(out_folder, *deck_parts)
-        os.makedirs(deck_folder, exist_ok=True)
-
-
-        # write the question and answer to a markdown file
-
-        question_sanitised = re.sub(r'[<>:"/\\|?*]', '_', question)
-        if question.startswith('"'):
-            question = question[1:-1]
-        if answer.startswith('"'):
-            answer = answer[1:-2]
-
-
-        with open(os.path.join(deck_folder, f"{question_sanitised}.md"), 'a') as question_file:
-            # search for '<src=" and replace with 'src=""media/' in both question and answer
-            num_of_dot_dots = len(deck_parts) + 1
-            if ("3D rotation") in question:
-                print(num_of_dot_dots)
-            
-            dot_dots = "../" * num_of_dot_dots
-            question = question.replace('<img src=""', f'<img src={dot_dots}media/')
-            question = question.replace('.jpg""', '.jpg')
-            answer2 = answer.replace('<img src=""', f'<img src={dot_dots}media/')
-            answer2 = answer2.replace('.jpg""', '.jpg')
-
-            question_file.write(f"# {question}\n")
-            question_file.write(f"{answer2}\n")
+        process_card(line)
+       
 
