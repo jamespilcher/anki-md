@@ -71,8 +71,15 @@ with open(anki_text, 'r') as file:
 
         with open(os.path.join(deck_folder, f"{question_sanitised}.md"), 'a') as question_file:
             # search for '<src=" and replace with 'src=""media/' in both question and answer
-            question = question.replace('<img src=""', '<img src=""../media/')
-            answer2 = answer.replace('<img src=""', '<img src=""../media/')
+            num_of_dot_dots = len(deck_parts) + 1
+            if ("3D rotation") in question:
+                print(num_of_dot_dots)
+            
+            dot_dots = "../" * num_of_dot_dots
+            question = question.replace('<img src=""', f'<img src={dot_dots}media/')
+            question = question.replace('.jpg""', '.jpg')
+            answer2 = answer.replace('<img src=""', f'<img src={dot_dots}media/')
+            answer2 = answer2.replace('.jpg""', '.jpg')
 
             question_file.write(f"# {question}\n")
             question_file.write(f"{answer2}\n")
