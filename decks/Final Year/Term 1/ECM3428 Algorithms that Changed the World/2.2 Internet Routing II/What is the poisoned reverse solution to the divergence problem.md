@@ -1,0 +1,5 @@
+## What is the poisoned reverse solution to the divergence problem?
+<details>
+<summary><b>Reveal answer</b></summary>
+The router sends outgoing route advertisements back to the interfaface from which it has learned this route with a metric set to infinity.<br><br>this avoids infinite loops.<br><br><div>Poisoned reverse essentially tells the neighbor:</div><div><strong>""Hey, you informed me about this route, so there's no point in trying to send traffic for that route back through me.""</strong></div><br><li>Suppose <strong>Router A</strong> learns about a route to <strong>Network X</strong> from <strong>Router B</strong>.</li><li><strong>Router A</strong> would then send an update back to <strong>Router B</strong> with the route to <strong>Network X</strong> marked as unreachable (i.e., with an infinite metric).</li><li>This prevents <strong>Router B</strong> from thinking that <strong>Router A</strong> can still reach <strong>Network X</strong> and stops traffic from being sent in a loop between the routers.</li>
+</details>
