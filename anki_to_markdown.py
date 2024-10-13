@@ -1,7 +1,6 @@
 import os
 import re
 import shutil
-import sys
 
 # 1. Open anki
 # 2. 'Cog' the deck you want to export... click export
