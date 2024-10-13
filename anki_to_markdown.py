@@ -5,7 +5,7 @@ import sys
 
 # 1. Open anki
 # 2. 'Cog' the deck you want to export... click export
-# 3. Export as 'Notes in Plain Text' with ALL options:
+# 3. Export as 'Notes in Plain Text' with the following options:
 #     - Include HTML and media references
 #     - Include tags
 #     - Include deck name !!!! IMPORTANT, non default !!!!
