@@ -71,8 +71,8 @@ with open(anki_text, 'r') as file:
 
         with open(os.path.join(deck_folder, f"{question_sanitised}.md"), 'a') as question_file:
             # search for '<src=" and replace with 'src=""media/' in both question and answer
-            question = question.replace('<img src="', '<img src="media/')
-            answer2 = answer.replace('<img src=""', '<img src=""media/')
+            question = question.replace('<img src=""', '<img src=""../media/')
+            answer2 = answer.replace('<img src=""', '<img src=""../media/')
 
             question_file.write(f"# {question}\n")
             question_file.write(f"{answer2}\n")
