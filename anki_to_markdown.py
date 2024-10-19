@@ -3,15 +3,16 @@ import re
 import shutil
 
 # 1. Open anki
-# 2. 'Cog' the deck you want to export... click export
-# 3. Export as 'Notes in Plain Text' with the following options:
+# 2. For each deck you want to export:
+# a. 'Cog' the deck you want to export... click export
+# b. Export as 'Notes in Plain Text' with the following options:
 #     - Include HTML and media references
 #     - Include tags
 #     - Include deck name !!!! IMPORTANT, non default !!!!
-# 4. Save the file to a location
-# 5. Update constants:
+# c. Save the file to a location
+# 3. Update constants:
 ANKI_MEDIA_FOLDER = r"C:\Users\pilch\AppData\Roaming\Anki2\User 1\collection.media" # can find via %APPDATA%\Anki2\User 1\collection.media
-ANKI_EXPORTED_DECK_TXT = r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt" # path to the exported deck txt file
+ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt"] # path to the exported deck txt files
 
 # 6. Run the script from same folder as this file!
 cwd = os.getcwd()
@@ -91,4 +92,6 @@ def convert_anki_deck_to_md(deck_folder: str):
 
 clear_decks_folder()
 copy_media_files()
-convert_anki_deck_to_md(ANKI_EXPORTED_DECK_TXT)
+
+for deck in ANKI_EXPORTED_DECK_TXTS:
+    convert_anki_deck_to_md(deck)
