@@ -12,9 +12,10 @@ import shutil
 # c. Save the file to a location
 # 3. Update constants:
 ANKI_MEDIA_FOLDER = r"C:\Users\pilch\AppData\Roaming\Anki2\User 1\collection.media" # can find via %APPDATA%\Anki2\User 1\collection.media
-ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt"] # path to the exported deck txt files
+ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt"] # paths to exported deck txts
 
 # 6. Run the script from same folder as this file!
+
 cwd = os.getcwd()
 DECKS_FOLDER = os.path.join(cwd, "decks")
 MEDIA_FOLDER = os.path.join(cwd, "media")
@@ -82,7 +83,11 @@ def process_card(line: str):
 def convert_anki_deck_to_md(deck_folder: str):
     print("Converting Anki deck to markdown...")
     with open(deck_folder, 'r') as file:
-        lines = file.readlines()
+        try:
+            lines = file.readlines()
+        except UnicodeDecodeError as e:
+            print(f"Error reading file, check deck export instructions: {deck_folder} - {e}")
+            return
         for line in lines:
             if line.startswith("#"):
                 # metadata line, skip
