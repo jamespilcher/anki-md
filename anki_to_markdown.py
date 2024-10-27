@@ -12,7 +12,7 @@ import shutil
 # c. Save the file to a location
 # 3. Update constants:
 ANKI_MEDIA_FOLDER = r"C:\Users\pilch\AppData\Roaming\Anki2\User 1\collection.media" # can find via %APPDATA%\Anki2\User 1\collection.media
-ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\Final Year with deck.txt"] # paths to exported deck txts
+ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\deck.txt"] # paths to exported deck txts
 
 # 6. Run the script from same folder as this file!
 
@@ -42,15 +42,23 @@ def clear_decks_folder():
     print("Decks folder cleared.")
     return
 
-def sanitize_and_fix_paths(text: str, num_of_dot_dots: int) -> str:
+def sanatize_filename(s: str):
+    # remove special characters and image references
+    card_title = re.sub(r'[<>:"/\\|?*]', '', s)
+    card_title = re.sub(r'img src=[^\s]+.jpg', '', card_title)
+    card_title = re.sub(r'img src=[^\s]+.png', '', card_title)
+    card_title = re.sub(r'&nbsp;', '', card_title)
+    return card_title
+
+def sanitize_and_fix_paths_card(text: str, num_of_dot_dots: int) -> str:
     if text.startswith('"') and text.endswith('"'): # quote quirk fix
         text = text[1:-1]
     dot_dots = "../" * num_of_dot_dots
     text = text.replace('<img src=""', f'<img src="{dot_dots}media/').replace('.jpg""', '.jpg"')
     return text
 
-def create_card_md(deck_folder: str, card_title: str, question: str, answer: str):
-    with open(os.path.join(deck_folder, f"{card_title}.md"), 'a') as card_file:
+def create_card_md(deck_folder: str, filename: str, question: str, answer: str):
+    with open(os.path.join(deck_folder, f"{filename}.md"), 'a') as card_file:
 
         card_file.write(f"## {question}\n")
         # wrap the answer in a details tag, so it's hidden until clicked
@@ -74,11 +82,11 @@ def process_card(line: str):
     deck_folder = os.path.join(DECKS_FOLDER, *deck_parts)
     os.makedirs(deck_folder, exist_ok=True)
 
-    card_title = re.sub(r'[<>:"/\\|?*]', '', question)
-    question = sanitize_and_fix_paths(question, num_of_dot_dots)
-    answer = sanitize_and_fix_paths(answer, num_of_dot_dots)
+    filename = sanatize_filename(question)
+    question = sanitize_and_fix_paths_card(question, num_of_dot_dots)
+    answer = sanitize_and_fix_paths_card(answer, num_of_dot_dots)
 
-    create_card_md(deck_folder, card_title, question, answer)
+    create_card_md(deck_folder, filename, question, answer)
 
 def convert_anki_deck_to_md(deck_folder: str):
     print("Converting Anki deck to markdown...")
