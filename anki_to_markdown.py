@@ -48,6 +48,7 @@ def sanatize_filename(s: str):
     card_title = re.sub(r'img src=[^\s]+.jpg', '', card_title)
     card_title = re.sub(r'img src=[^\s]+.png', '', card_title)
     card_title = re.sub(r'&nbsp;', '', card_title)
+    card_title = card_title[:50] # limit to 50 characters
     return card_title
 
 def sanitize_and_fix_paths_card(text: str, num_of_dot_dots: int) -> str:
