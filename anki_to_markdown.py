@@ -44,7 +44,7 @@ def clear_decks_folder():
 
 def sanatize_filename(s: str):
     # remove special characters and image references
-    card_title = re.sub(r'[<>:"/\\|?*]', '', s)
+    card_title = re.sub(r'[<>:"/\\|?*]', ' ', s)
     card_title = re.sub(r'img src=[^\s]+.jpg', '', card_title)
     card_title = re.sub(r'img src=[^\s]+.png', '', card_title)
     card_title = re.sub(r'&nbsp;', '', card_title)
@@ -59,7 +59,7 @@ def sanitize_and_fix_paths_card(text: str, num_of_dot_dots: int) -> str:
     return text
 
 def create_card_md(deck_folder: str, filename: str, question: str, answer: str):
-    with open(os.path.join(deck_folder, f"{filename}.md"), 'a') as card_file:
+    with open(os.path.join(deck_folder, f"{filename}.md"), 'a',  encoding='utf-8') as card_file:
 
         card_file.write(f"## {question}\n")
         # wrap the answer in a details tag, so it's hidden until clicked
@@ -91,17 +91,18 @@ def process_card(line: str):
 
 def convert_anki_deck_to_md(deck_folder: str):
     print("Converting Anki deck to markdown...")
-    with open(deck_folder, 'r') as file:
-        try:
-            lines = file.readlines()
-        except UnicodeDecodeError as e:
-            print(f"Error reading file, check deck export instructions: {deck_folder} - {e}")
-            return
-        for line in lines:
+    with open(deck_folder, 'r', encoding='utf-8') as file:
+        print(f"Reading file: {deck_folder}")
+        for line in file:
             if line.startswith("#"):
                 # metadata line, skip
                 continue
-            process_card(line)
+            try:
+                process_card(line)
+            
+            except Exception as e:
+                print(f"Error processing line: {line.strip()} - {e}")
+                continue
     print("Anki deck successfully converted to markdown")
 
 clear_decks_folder()
