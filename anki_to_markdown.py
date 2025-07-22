@@ -12,7 +12,7 @@ import shutil
 # c. Save the file to a location
 # 3. Update constants:
 ANKI_MEDIA_FOLDER = r"C:\Users\pilch\AppData\Roaming\Anki2\User 1\collection.media" # can find via %APPDATA%\Anki2\User 1\collection.media
-ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\deck.txt"] # paths to exported deck txts
+ANKI_EXPORTED_DECK_TXTS = [r"C:\Users\pilch\OneDrive\Desktop\Final Year.txt"] # paths to exported deck txts
 
 # 6. Run the script from same folder as this file!
 
@@ -23,6 +23,8 @@ MEDIA_FOLDER = os.path.join(cwd, "media")
 def copy_media_files():
     print("Copying media files...")
     for file in os.listdir(ANKI_MEDIA_FOLDER):
+        if "quizlet" in file:
+            continue
         if file.endswith(".png") or file.endswith(".jpg"):
             shutil.copy2(os.path.join(ANKI_MEDIA_FOLDER, file), MEDIA_FOLDER)
     print("Media files copied.")
@@ -89,20 +91,44 @@ def process_card(line: str):
 
     create_card_md(deck_folder, filename, question, answer)
 
-def convert_anki_deck_to_md(deck_folder: str):
+def convert_anki_deck_to_md(deck_file: str):
     print("Converting Anki deck to markdown...")
-    with open(deck_folder, 'r', encoding='utf-8') as file:
-        print(f"Reading file: {deck_folder}")
-        for line in file:
-            if line.startswith("#"):
-                # metadata line, skip
-                continue
-            try:
-                process_card(line)
-            
-            except Exception as e:
-                print(f"Error processing line: {line.strip()} - {e}")
-                continue
+    with open(deck_file, 'r', encoding='utf-8') as file:
+        print(f"Reading file: {deck_file}")
+        lines = file.readlines()
+    
+    # Group lines into complete cards
+    cards = []
+    current_card = ""
+    
+    for line in lines:
+        line = line.strip()
+        if line.startswith("#"):
+            # Skip metadata lines
+            continue
+        
+        if line.startswith("Final Year::"):
+            # Start of a new card - save the previous card if it exists
+            if current_card:
+                cards.append(current_card)
+            current_card = line
+        else:
+            # Continuation of current card
+            if current_card:
+                current_card += " " + line
+    
+    # Don't forget the last card
+    if current_card:
+        cards.append(current_card)
+    
+    # Process each complete card
+    for card in cards:
+        try:
+            process_card(card)
+        except Exception as e:
+            print(f"Error processing card: {card[:100]}... - {e}")
+            continue
+    
     print("Anki deck successfully converted to markdown")
 
 clear_decks_folder()

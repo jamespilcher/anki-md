@@ -1,0 +1,5 @@
+## <img src="../../../../../media/paste-a32f579ce0cf30d0c84b5bdc08bf0f387d9b8ac2.jpg">
+<details>
+<summary><b>Reveal answer</b></summary>
+<div><strong>1. What They Evolve</strong></div> <ul> <li> <div><strong>GA:</strong> Solutions (e.g., strings, vectors).</div> </li> <li> <div><strong>GP:</strong> Programs (tree structures).</div> </li> </ul> <div><strong>2. Representation</strong></div> <ul> <li> <div><strong>GA:</strong> Linear array-likes (bit strings, numbers).</div> </li> <li> <div><strong>GP:</strong> Trees (functions + terminals).</div> </li> </ul> <div><strong>3. Fitness Evaluation</strong></div> <ul> <li> <div><strong>GA:</strong> Based on solution performance.</div> </li> <li> <div><strong>GP:</strong> Run program on test cases and measure output.</div> </li> </ul> <div><strong>4. Genetic Operators</strong></div> <ul> <li> <div><strong>GA:</strong> Point/Uniform crossover, bit mutation.</div> </li> <li> <div><strong>GP:</strong> Subtree crossover and mutation.</div> </li></ul>
+</details>
